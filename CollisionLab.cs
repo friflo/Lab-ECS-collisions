@@ -44,9 +44,12 @@ public static class CollisionLab
             store.CreateEntity(new EntityName($"Tile {n}"), new Position2D(n, 0), new ColliderBBox(1,1), Tags.Get<Environment>());    
         }
         
+        // --- create / execute two nested queries to get collision between environment tiles and characters
+        // Using tags enables to define two sets of collision candidates (tiles & characters)
+        // So collisions of tiles with other tiles will not be in the collision result.
         var characterQuery  = store.Query<Position2D, ColliderBBox>().AnyTags(Tags.Get<Character>());
         var envQuery        = store.Query<Position2D, ColliderBBox>().AnyTags(Tags.Get<Environment>());
-        
+
         envQuery.ForEachEntity((ref Position2D envPos, ref ColliderBBox envBBox, Entity env) =>
         {
             var pos  = envPos.pos;
