@@ -11,5 +11,26 @@ In case of questions join the Discord server.
 - May add optimized collision detection using spatial hashing.
 - Collect ideas.
 
+## Key decisions
+
+Precondition / assumptions  
+- A solution for 2D collision detection.
+- Typically a map created with [Tiled](https://www.mapeditor.org/).
+
+On startup the **Tiled** Map is imported and all tiles are converted to entities.  
+Tiles which are subject to collision will have a `Position2D` and a `ColliderBox` component.  
+These tiles are also tagged with `Environment`.  
+Depending of the layer and its properties additional tags can be added to the created entities.
+
+Characters like players or monsters will also be entities with a `Position2D` and a `ColliderBox` component.  
+These entities will be tagged with `Character`.
+
+To enforce simplicity only queries like: `Query<Position, ColliderBox>()` are used.  
+E.g. entities which are only used for rendering will not have a collider.  
+
+
+
+
+
 Contributions welcome 😊
 
