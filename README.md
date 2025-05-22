@@ -5,6 +5,8 @@ A small C# project showing how to create a simple collision system with [friflo 
 Created the example because of a question *"How to detect collisions in an ECS"* on [Discord](https://discord.com/invite/nFfrhgQkb8).  
 In case of questions join the Discord server.
 
+Setup a small [GitHub gist](https://gist.github.com/friflo/b81cff785ce846270afa2810dc4b0cd5) to define required component types.
+
 **Goals**
 - Super simple implementation using ECS queries to get the collision candidates.
 - Rudimentary BBox collision logic from CoPilot. No optimizations.
