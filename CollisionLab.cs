@@ -63,6 +63,7 @@ public static class CollisionLab
         });
     }
     
+    // If wrong blame Copilot :)
     private static bool IsCollision(Vector2 pos1, Vector2 size1, Vector2 pos2, Vector2 size2)
     {
         return !(pos1.X + size1.X < pos2.X ||
