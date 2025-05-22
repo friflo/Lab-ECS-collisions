@@ -60,7 +60,7 @@ public static class CollisionLab
             characterQuery.ForEachEntity((ref Position2D charPos, ref ColliderBBox charBBox, Entity character) =>
             {
                 if (IsCollision(pos, size, charPos.pos, charBBox.size)) {
-                    Console.WriteLine($"{character.Name} collided with environment entity {env.Id}");
+                    Console.WriteLine($"{character.Name} collided with {env.Name}");
                 }
             });
         });
