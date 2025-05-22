@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 using Friflo.Engine.ECS;
 
 namespace LabEcsCollisions;
@@ -32,11 +33,11 @@ public static class CollisionLab
     public static void Run()
     {
         var store = new EntityStore();
-        Console.WriteLine("\nCollisions:");
+
         
         // --- create character entities
         store.CreateEntity(new EntityName("Player"),    new Position2D(4, 0),  new ColliderBBox(1,1), Tags.Get<Character>());
-        store.CreateEntity(new EntityName("Monster 1"), new Position2D(8, 0),  new ColliderBBox(1,1), Tags.Get<Character>());
+        store.CreateEntity(new EntityName("Monster 1"), new Position2D(5, 0),  new ColliderBBox(1,1), Tags.Get<Character>());
         store.CreateEntity(new EntityName("Monster 2"), new Position2D(10, 0), new ColliderBBox(1,1), Tags.Get<Character>());
         
         // --- create environment entities
@@ -50,6 +51,8 @@ public static class CollisionLab
         var characterQuery  = store.Query<Position2D, ColliderBBox>().AnyTags(Tags.Get<Character>());
         var envQuery        = store.Query<Position2D, ColliderBBox>().AnyTags(Tags.Get<Environment>());
 
+        Console.WriteLine();
+        Console.WriteLine("--- Collisions: characters with tiles");
         envQuery.ForEachEntity((ref Position2D envPos, ref ColliderBBox envBBox, Entity env) =>
         {
             var pos  = envPos.pos;
@@ -58,6 +61,21 @@ public static class CollisionLab
             {
                 if (IsCollision(pos, size, charPos.pos, charBBox.size)) {
                     Console.WriteLine($"{character.Name} collided with environment entity {env.Id}");
+                }
+            });
+        });
+        
+        Console.WriteLine();
+        Console.WriteLine("--- Collisions: characters with characters");
+        characterQuery.ForEachEntity((ref Position2D otherPos, ref ColliderBBox otherBBox, Entity other) =>
+        {
+            var pos  = otherPos.pos;
+            var size = otherBBox.size;
+            characterQuery.ForEachEntity((ref Position2D charPos, ref ColliderBBox charBBox, Entity character) =>
+            {
+                if (other == character) return;
+                if (IsCollision(pos, size, charPos.pos, charBBox.size)) {
+                    Console.WriteLine($"{character.Name} collided with {other.Name}");
                 }
             });
         });
