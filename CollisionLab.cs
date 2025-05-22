@@ -32,6 +32,7 @@ public static class CollisionLab
     public static void Run()
     {
         var store = new EntityStore();
+        Console.WriteLine("\nCollisions:");
         
         // --- create character entities
         store.CreateEntity(new EntityName("Player"),    new Position2D(4, 0),  new ColliderBBox(1,1), Tags.Get<Character>());
@@ -46,18 +47,25 @@ public static class CollisionLab
         var characterQuery  = store.Query<Position2D, ColliderBBox>().AnyTags(Tags.Get<Character>());
         var envQuery        = store.Query<Position2D, ColliderBBox>().AnyTags(Tags.Get<Environment>());
         
-        envQuery.ForEachEntity((ref Position2D envPos, ref ColliderBBox envBBox, Entity _) =>
+        envQuery.ForEachEntity((ref Position2D envPos, ref ColliderBBox envBBox, Entity env) =>
         {
             var pos  = envPos.pos;
             var size = envBBox.size;
-            characterQuery.ForEachEntity((ref Position2D charPos, ref ColliderBBox charBBox, Entity _) =>
+            characterQuery.ForEachEntity((ref Position2D charPos, ref ColliderBBox charBBox, Entity character) =>
             {
-                Collide(pos, size, charPos.pos, charBBox.size);
+                if (IsCollision(pos, size, charPos.pos, charBBox.size)) {
+                    Console.WriteLine($"{character.Name} collided with environment entity {env.Id}");
+                }
             });
         });
     }
     
-    private static bool Collide(Vector2 pos1, Vector2 bbox1, Vector2 pos2, Vector2 bbox2) {
-        return false;
+    private static bool IsCollision(Vector2 pos1, Vector2 size1, Vector2 pos2, Vector2 size2)
+    {
+        return !(pos1.X + size1.X < pos2.X ||
+                 pos1.X > pos2.X + size2.X ||
+                 pos1.Y + size1.Y < pos2.Y ||
+                 pos1.Y > pos2.Y + size2.Y);
     }
+
 }
