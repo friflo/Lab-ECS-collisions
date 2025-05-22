@@ -20,10 +20,13 @@ Precondition / assumptions
 On startup the **Tiled** Map is imported and all tiles are converted to entities.  
 Tiles which are subject to collision will have a `Position2D` and a `ColliderBox` component.  
 These tiles are also tagged with `Environment`.  
-Depending of the layer and its properties additional tags can be added to the created entities.
+Depending of the layer and its properties additional tags can be added to the created entities.  
+After importing the TileMap all created entities will have a `Position2D` component in world space.
 
 Characters like players or monsters will also be entities with a `Position2D` and a `ColliderBox` component.  
 These entities will be tagged with `Character`.
+
+
 
 To enforce simplicity only queries like: `Query<Position, ColliderBox>()` are used.  
 E.g. entities which are only used for rendering will not have a collider.  
