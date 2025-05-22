@@ -14,11 +14,11 @@ struct Position2D : IComponent
     }
 }
     
-struct ColliderBBox : IComponent
+struct ColliderBox : IComponent
 {
     public Vector2     size;
         
-    public ColliderBBox(float width, float height) {
+    public ColliderBox(float width, float height) {
         size = new Vector2(width, height);
     }
 }
@@ -36,30 +36,30 @@ public static class CollisionLab
 
         
         // --- create character entities
-        store.CreateEntity(new EntityName("Player"),    new Position2D(4, 0),  new ColliderBBox(1,1), Tags.Get<Character>());
-        store.CreateEntity(new EntityName("Monster 1"), new Position2D(5, 0),  new ColliderBBox(1,1), Tags.Get<Character>());
-        store.CreateEntity(new EntityName("Monster 2"), new Position2D(10, 0), new ColliderBBox(1,1), Tags.Get<Character>());
+        store.CreateEntity(new EntityName("Player"),    new Position2D(4, 0),  new ColliderBox(1,1), Tags.Get<Character>());
+        store.CreateEntity(new EntityName("Monster 1"), new Position2D(5, 0),  new ColliderBox(1,1), Tags.Get<Character>());
+        store.CreateEntity(new EntityName("Monster 2"), new Position2D(10, 0), new ColliderBox(1,1), Tags.Get<Character>());
         
         // --- create environment entities
         for (int n = 0; n < 10; n++) {
-            store.CreateEntity(new EntityName($"Tile {n}"), new Position2D(n, 0), new ColliderBBox(1,1), Tags.Get<Environment>());    
+            store.CreateEntity(new EntityName($"Tile {n}"), new Position2D(n, 0), new ColliderBox(1,1), Tags.Get<Environment>());    
         }
         
         // --- create / execute two nested queries to get collision between environment tiles and characters
         // Using tags enables to define two sets of collision candidates (tiles & characters)
         // So collisions of tiles with other tiles will not be in the collision result.
-        var characterQuery  = store.Query<Position2D, ColliderBBox>().AnyTags(Tags.Get<Character>());
-        var envQuery        = store.Query<Position2D, ColliderBBox>().AnyTags(Tags.Get<Environment>());
+        var characterQuery  = store.Query<Position2D, ColliderBox>().AnyTags(Tags.Get<Character>());
+        var envQuery        = store.Query<Position2D, ColliderBox>().AnyTags(Tags.Get<Environment>());
 
         Console.WriteLine();
         Console.WriteLine("--- Collisions: characters with tiles");
-        envQuery.ForEachEntity((ref Position2D envPos, ref ColliderBBox envBBox, Entity env) =>
+        envQuery.ForEachEntity((ref Position2D envPos, ref ColliderBox envBox, Entity env) =>
         {
             var pos  = envPos.pos;
-            var size = envBBox.size;
-            characterQuery.ForEachEntity((ref Position2D charPos, ref ColliderBBox charBBox, Entity character) =>
+            var size = envBox.size;
+            characterQuery.ForEachEntity((ref Position2D charPos, ref ColliderBox charBox, Entity character) =>
             {
-                if (IsCollision(pos, size, charPos.pos, charBBox.size)) {
+                if (IsCollision(pos, size, charPos.pos, charBox.size)) {
                     Console.WriteLine($"{character.Name} collided with {env.Name}");
                 }
             });
@@ -67,14 +67,14 @@ public static class CollisionLab
         
         Console.WriteLine();
         Console.WriteLine("--- Collisions: characters with characters");
-        characterQuery.ForEachEntity((ref Position2D otherPos, ref ColliderBBox otherBBox, Entity other) =>
+        characterQuery.ForEachEntity((ref Position2D otherPos, ref ColliderBox otherBox, Entity other) =>
         {
             var pos  = otherPos.pos;
-            var size = otherBBox.size;
-            characterQuery.ForEachEntity((ref Position2D charPos, ref ColliderBBox charBBox, Entity character) =>
+            var size = otherBox.size;
+            characterQuery.ForEachEntity((ref Position2D charPos, ref ColliderBox charBox, Entity character) =>
             {
                 if (other == character) return;
-                if (IsCollision(pos, size, charPos.pos, charBBox.size)) {
+                if (IsCollision(pos, size, charPos.pos, charBox.size)) {
                     Console.WriteLine($"{character.Name} collided with {other.Name}");
                 }
             });
