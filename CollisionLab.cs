@@ -1,5 +1,4 @@
 using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
 using Friflo.Engine.ECS;
 
 namespace LabEcsCollisions;
@@ -55,29 +54,31 @@ public static class CollisionLab
         Console.WriteLine("--- Collisions: characters with tiles");
         envQuery.ForEachEntity((ref Position2D envPos, ref ColliderBox envBox, Entity env) =>
         {
-            var pos  = envPos.pos;
-            var size = envBox.size;
-            characterQuery.ForEachEntity((ref Position2D charPos, ref ColliderBox charBox, Entity character) =>
-            {
-                if (IsCollision(pos, size, charPos.pos, charBox.size)) {
-                    Console.WriteLine($"{character.Name} collided with {env.Name}");
+            foreach (var (positions, colliders, characters) in characterQuery.Chunks) {
+                var positionSpan = positions.Span;
+                var colliderSpan = colliders.Span;
+                for (int n = 0; n < characters.Length; n++) {
+                    if (IsCollision(envPos.pos, envBox.size, positionSpan[n].pos, colliderSpan[n].size)) {
+                        Console.WriteLine($"{characters.EntityAt(n).Name} collided with {env.Name}");
+                    }
                 }
-            });
+            }
         });
         
         Console.WriteLine();
         Console.WriteLine("--- Collisions: characters with characters");
         characterQuery.ForEachEntity((ref Position2D otherPos, ref ColliderBox otherBox, Entity other) =>
         {
-            var pos  = otherPos.pos;
-            var size = otherBox.size;
-            characterQuery.ForEachEntity((ref Position2D charPos, ref ColliderBox charBox, Entity character) =>
-            {
-                if (other == character) return;
-                if (IsCollision(pos, size, charPos.pos, charBox.size)) {
-                    Console.WriteLine($"{character.Name} collided with {other.Name}");
+            foreach (var (positions, colliders, characters) in characterQuery.Chunks) {
+                var positionSpan = positions.Span;
+                var colliderSpan = colliders.Span;
+                for (int n = 0; n < characters.Length; n++) {
+                    if (other.Id == characters[n]) continue;
+                    if (IsCollision(otherPos.pos, otherBox.size, positionSpan[n].pos, colliderSpan[n].size)) {
+                        Console.WriteLine($"{characters.EntityAt(n).Name} collided with {other.Name}");
+                    }
                 }
-            });
+            }
         });
     }
     
